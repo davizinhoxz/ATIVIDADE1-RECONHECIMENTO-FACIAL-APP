@@ -31,8 +31,8 @@ app.post('/gerar-imagem', async (req, res) => {
     const data = await response.json();
     console.log('Resposta Pixazo:', JSON.stringify(data));
 
-    if (data.output) {
-      res.json({ imagem: data.output });
+    if (data.imageUrl) {
+      res.json({ imagem: data.imageUrl });
     } else {
       res.status(500).json({ erro: 'Falha ao gerar imagem', detalhe: data });
     }
