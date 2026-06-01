@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>MEMEFRAME</title>
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #111; color: #fff; font-family: sans-serif; text-align: center; }
+    h1 { font-size: 3rem; color: #e74c3c; padding: 20px; letter-spacing: 4px; }
+    h1 span { color: #fff; }
+    #passos { display: flex; justify-content: center; gap: 10px; margin: 10px; }
+    .passo { padding: 8px 20px; border-radius: 20px; background: #333; font-size: 14px; }
+    .passo.ativo { background: #e74c3c; }
+    #camara-box { position: relative; display: inline-block; margin: 20px auto; }
+    video, canvas { border-radius: 12px; }
+    canvas { position: absolute; top: 0; left: 0; }
+    button { padding: 12px 28px; border: none; border-radius: 8px; background: #e74c3c; color: #fff; font-size: 16px; cursor: pointer; margin: 8px; }
+    button:hover { opacity: 0.85; }
+    button.sec { background: #333; }
+    #expressoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px; }
+    .expr { background: #222; border: 2px solid #333; border-radius: 12px; padding: 16px 20px; cursor: pointer; font-size: 24px; }
+    .expr:hover, .expr.sel { border-color: #e74c3c; background: #2a1010; }
+    .expr p { font-size: 12px; margin-top: 4px; color: #aaa; }
+    #estilos { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px; }
+    .estilo { background: #222; border: 2px solid #333; border-radius: 12px; padding: 16px 20px; cursor: pointer; width: 130px; }
+    .estilo:hover, .estilo.sel { border-color: #e74c3c; }
+    .estilo span { font-size: 30px; }
+    .estilo p { font-size: 13px; margin-top: 6px; color: #ccc; }
+    #resultado img { max-width: 400px; border-radius: 12px; margin: 20px auto; display: block; }
+    #status { color: #aaa; font-size: 14px; margin: 10px; min-height: 20px; }
+    .secao { display: none; }
+    .secao.visivel { display: block; }
+    #foto-preview { max-width: 300px; border-radius: 12px; margin: 10px auto; display: block; }
+  </style>
+</head>
+<body>
+
+<h1>MEME<span>FRAME</span></h1>
+
+<div id="passos">
+  <div class="passo ativo" id="p1">1. Câmera</div>
+  <div class="passo" id="p2">2. Expressão</div>
+  <div class="passo" id="p3">3. Estilo</div>
+  <div class="passo" id="p4">4. Gerar</div>
+</div>
+
+<div id="status"></div>
+
+<!-- PASSO 1 -->
+<div class="secao visivel" id="sec1">
+  <div id="camara-box">
+    <video id="video" width="480" height="360" autoplay muted></video>
+    <canvas id="overlay" width="480" height="360"></canvas>
+  </div>
+  <br>
+  <button onclick="tirarFoto()">📸 Tirar Foto</button>
+</div>
+
+<!-- PASSO 2 -->
+<div class="secao" id="sec2">
+  <img id="foto-preview" src="" alt="A tua foto">
+  <h3 style="margin:16px">Que expressão fizeste?</h3>
+  <div id="expressoes">
+    <div class="expr" onclick="escolherExpr(this,'surprised','😱')"><span>😱</span><p>Surpreso</p></div>
+    <div class="expr" onclick="escolherExpr(this,'angry','😤')"><span>😤</span><p>Com Raiva</p></div>
+    <div class="expr" onclick="escolherExpr(this,'happy','😄')"><span>😄</span><p>Muito Feliz</p></div>
+    <div class="expr" onclick="escolherExpr(this,'sad','😭')"><span>😭</span><p>Muito Triste</p></div>
+    <div class="expr" onclick="escolherExpr(this,'fearful','😨')"><span>😨</span><p>Bem Assustado</p></div>
+    <div class="expr" onclick="escolherExpr(this,'disgusted','🤢')"><span>🤢</span><p>Com Nojo</p></div>
+  </div>
+  <button id="btn-estilo" style="display:none" onclick="irPasso(3)">Próximo ➜</button>
+</div>
+
+<!-- PASSO 3 -->
+<div class="secao" id="sec3">
+  <h3 style="margin:16px">Escolhe o estilo da imagem</h3>
+  <div id="estilos">
+    <div class="estilo" onclick="escolherEstilo(this,'anime style, manga, vibrant')"><span>🎌</span><p>Anime</p></div>
+    <div class="estilo" onclick="escolherEstilo(this,'pixel art, 8-bit retro game style')"><span>👾</span><p>Pixel Art</p></div>
+    <div class="estilo" onclick="escolherEstilo(this,'classic internet meme, impact font, funny')"><span>📸</span><p>Meme Clássico</p></div>
+    <div class="estilo" onclick="escolherEstilo(this,'cartoon, colorful animation style')"><span>🖍️</span><p>Cartoon</p></div>
+    <div class="estilo" onclick="escolherEstilo(this,'oil painting, classical art museum style')"><span>🎨</span><p>Pintura</p></div>
+    <div class="estilo" onclick="escolherEstilo(this,'plastic action figure toy, studio lighting')"><span>🦸</span><p>Action Figure</p></div>
+  </div>
+  <button id="btn-gerar" style="display:none" onclick="gerarImagem()">✨ Gerar com IA</button>
+</div>
+
+<!-- PASSO 4 -->
+<div class="secao" id="sec4">
+  <div id="resultado">
+    <p style="font-size:18px;margin:20px">A gerar a tua imagem... ⏳</p>
+  </div>
+  <button class="sec" onclick="irPasso(1)">🔄 Novo Meme</button>
+</div>
+
+<script>
+  let exprSel = '';
+  let estiloSel = '';
+  let fotoBase64 = '';
+
+  // Iniciar câmera
+  async function iniciarCamera() {
+    const video = document.getElementById('video');
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+  }
+
+  function tirarFoto() {
+    const video = document.getElementById('video');
+    const canvas = document.createElement('canvas');
+    canvas.width = 480; canvas.height = 360;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    fotoBase64 = canvas.toDataURL('image/jpeg');
+    document.getElementById('foto-preview').src = fotoBase64;
+    irPasso(2);
+  }
+
+  function escolherExpr(el, nome) {
+    document.querySelectorAll('.expr').forEach(e => e.classList.remove('sel'));
+    el.classList.add('sel');
+    exprSel = nome;
+    document.getElementById('btn-estilo').style.display = 'inline-block';
+  }
+
+  function escolherEstilo(el, estilo) {
+    document.querySelectorAll('.estilo').forEach(e => e.classList.remove('sel'));
+    el.classList.add('sel');
+    estiloSel = estilo;
+    document.getElementById('btn-gerar').style.display = 'inline-block';
+  }
+
+  async function gerarImagem() {
+    irPasso(4);
+    const prompt = `A person with a ${exprSel} expression, ${estiloSel}, high quality, detailed`;
+    document.getElementById('status').textContent = 'A enviar para a IA...';
+
+    try {
+      const res = await fetch('/gerar-imagem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+
+      if (data.imagem) {
+        document.getElementById('resultado').innerHTML = `
+          <p style="margin:16px;font-size:18px">✅ Imagem gerada!</p>
+          <img src="${data.imagem}" alt="Meme gerado">
+          <br>
+          <a href="${data.imagem}" download="memeframe.png">
+            <button>⬇️ Guardar</button>
+          </a>
+        `;
+      } else {
+        document.getElementById('resultado').innerHTML = '<p>❌ Erro ao gerar imagem.</p>';
+      }
+    } catch(e) {
+      document.getElementById('resultado').innerHTML = '<p>❌ Erro: ' + e.message + '</p>';
+    }
+  }
+
+  function irPasso(n) {
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('sec' + i).classList.remove('visivel');
+      document.getElementById('p' + i).classList.remove('ativo');
+    }
+    document.getElementById('sec' + n).classList.add('visivel');
+    document.getElementById('p' + n).classList.add('ativo');
+  }
+
+  iniciarCamera();
+</script>
+</body>
+</html>
