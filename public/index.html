@@ -1,175 +1,512 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
   <meta charset="UTF-8">
-  <title>MEMEFRAME</title>
-  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUMORDETECTOR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:wght@400;700&display=swap"
+    rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #111; color: #fff; font-family: sans-serif; text-align: center; }
-    h1 { font-size: 3rem; color: #e74c3c; padding: 20px; letter-spacing: 4px; }
-    h1 span { color: #fff; }
-    #passos { display: flex; justify-content: center; gap: 10px; margin: 10px; }
-    .passo { padding: 8px 20px; border-radius: 20px; background: #333; font-size: 14px; }
-    .passo.ativo { background: #e74c3c; }
-    #camara-box { position: relative; display: inline-block; margin: 20px auto; }
-    video, canvas { border-radius: 12px; }
-    canvas { position: absolute; top: 0; left: 0; }
-    button { padding: 12px 28px; border: none; border-radius: 8px; background: #e74c3c; color: #fff; font-size: 16px; cursor: pointer; margin: 8px; }
-    button:hover { opacity: 0.85; }
-    button.sec { background: #333; }
-    #expressoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px; }
-    .expr { background: #222; border: 2px solid #333; border-radius: 12px; padding: 16px 20px; cursor: pointer; font-size: 24px; }
-    .expr:hover, .expr.sel { border-color: #e74c3c; background: #2a1010; }
-    .expr p { font-size: 12px; margin-top: 4px; color: #aaa; }
-    #estilos { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 20px; }
-    .estilo { background: #222; border: 2px solid #333; border-radius: 12px; padding: 16px 20px; cursor: pointer; width: 130px; }
-    .estilo:hover, .estilo.sel { border-color: #e74c3c; }
-    .estilo span { font-size: 30px; }
-    .estilo p { font-size: 13px; margin-top: 6px; color: #ccc; }
-    #resultado img { max-width: 400px; border-radius: 12px; margin: 20px auto; display: block; }
-    #status { color: #aaa; font-size: 14px; margin: 10px; min-height: 20px; }
-    .secao { display: none; }
-    .secao.visivel { display: block; }
-    #foto-preview { max-width: 300px; border-radius: 12px; margin: 10px auto; display: block; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      text-align: center;
+      padding: 24px 20px 12px;
+      border-bottom: 1px solid #222;
+      position: relative;
+    }
+
+    h1 {
+      font-family: 'Bangers', cursive;
+      font-size: 4rem;
+      letter-spacing: 8px;
+      line-height: 1;
+      background: linear-gradient(135deg, #e74c3c, #ff8c42);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #fff, #aaa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitulo {
+      font-size: 13px;
+      color: #555;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    #status {
+      color: #aaa;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      gap: 0;
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .col-esq {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding-right: 24px;
+      border-right: 1px solid #222;
+    }
+
+    .col-esq h2 {
+      font-family: 'Bangers', cursive;
+      font-size: 1.2rem;
+      letter-spacing: 3px;
+      color: #555;
+      text-transform: uppercase;
+    }
+
+    #camara-box {
+      position: relative;
+      display: inline-block;
+      border: 2px solid #222;
+    }
+
+    video {
+      display: block;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .botoes {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+
+    button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.sec {
+      background: #222;
+      box-shadow: none;
+      border: 1px solid #333;
+    }
+
+    button.sec:hover {
+      background: #2a2a2a;
+      box-shadow: none;
+    }
+
+    .dicas {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 16px;
+      width: 100%;
+      max-width: 420px;
+      text-align: left;
+    }
+
+    .dicas h3 {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #555;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .dica-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    .dica-item span:first-child {
+      font-size: 20px;
+    }
+
+    .col-dir {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding-left: 24px;
+    }
+
+    .col-dir h2 {
+      font-family: 'Bangers', cursive;
+      font-size: 1.2rem;
+      letter-spacing: 3px;
+      color: #555;
+      text-transform: uppercase;
+    }
+
+    #resultado {
+      width: 100%;
+      max-width: 420px;
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 28px;
+      display: none;
+      border: 1px solid #222;
+    }
+
+    #emoji {
+      font-size: 72px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    #humor-texto {
+      font-family: 'Bangers', cursive;
+      font-size: 2.2rem;
+      letter-spacing: 3px;
+      color: #e74c3c;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    #humor-desc {
+      font-size: 0.95rem;
+      color: #888;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .barras-titulo {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #444;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .barra-container {
+      background: #222;
+      border-radius: 8px;
+      margin: 6px 0;
+      height: 20px;
+      overflow: hidden;
+    }
+
+    .barra {
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .label-barra {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 2px;
+    }
+
+    #placeholder {
+      width: 100%;
+      max-width: 420px;
+      background: #1a1a1a;
+      border-radius: 16px;
+      padding: 40px 28px;
+      border: 1px dashed #222;
+      text-align: center;
+      color: #333;
+    }
+
+    #placeholder .ph-emoji {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    #placeholder p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    #animacao-curiosa {
+      display: none;
+      width: 180px;
+      border-radius: 16px;
+      margin: 0 auto;
+      animation: curiosoPop 0.4s ease forwards, balancar 1s ease infinite alternate 0.4s;
+      box-shadow: 0 0 30px rgba(230, 126, 34, 0.4);
+    }
+
+    #animacao-curiosa.ativo { display: block; }
+
+    #animacao-amostradinho {
+      display: none;
+      width: 280px;
+      border-radius: 16px;
+      margin: 0 auto;
+      animation: curiosoPop 0.4s ease forwards, balancar 1s ease infinite alternate 0.4s;
+      box-shadow: 0 0 40px rgba(241, 196, 15, 0.5);
+    }
+
+    @keyframes curiosoPop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes balancar {
+      from { transform: scale(1) rotate(-3deg); }
+      to   { transform: scale(1) rotate(3deg); }
+    }
+
+    #animacao-curiosa.ativo { display: block; }
   </style>
 </head>
+
 <body>
 
-<h1>MEME<span>FRAME</span></h1>
+  <header>
+    <h1>humor<span>DETECTOR</span></h1>
+    <div class="subtitulo">reconhecimento facial de expressões</div>
+    <div id="status">A carregar OS modelos...</div>
+  </header>
 
-<div id="passos">
-  <div class="passo ativo" id="p1">1. Câmera</div>
-  <div class="passo" id="p2">2. Expressão</div>
-  <div class="passo" id="p3">3. Estilo</div>
-  <div class="passo" id="p4">4. Gerar</div>
-</div>
+  <div class="main">
 
-<div id="status"></div>
+    <div class="col-esq">
+      <h2>Câmera</h2>
+      <div id="camara-box">
+        <video id="video" width="420" height="315" autoplay muted playsinline></video>
+        <canvas id="overlay" width="420" height="315"></canvas>
+      </div>
+      <div class="botoes">
+        <button id="btn-foto" onclick="tirarFoto()" disabled>📸 Analisar Expressão</button>
+        <button id="btn-novo" class="sec" onclick="novaFoto()" style="display:none">🔄 Nova</button>
+      </div>
+      <div class="dicas">
+        <h3>Exemplos de expressões</h3>
+        <div class="dica-item"><span>😄</span><span>Sorri o máximo que conseguires</span></div>
+        <div class="dica-item"><span>😤</span><span>Franze o sobrolho com força</span></div>
+        <div class="dica-item"><span>😱</span><span>Abre bem a boca e os olhos</span></div>
+        <div class="dica-item"><span>🧐</span><span>Põe a mão aberta ao lado da orelha</span></div>
+        <div class="dica-item"><span>😐</span><span>Fica completamente neutro e farma aura</span></div>
+        <div className="dica-item"><span>⭐</span><span>Extra: tenta ser amostradinho e terás uma surpresa (faz dois joinhas)</span></div>
+      </div>
+    </div>
 
-<!-- PASSO 1 -->
-<div class="secao visivel" id="sec1">
-  <div id="camara-box">
-    <video id="video" width="480" height="360" autoplay muted></video>
-    <canvas id="overlay" width="480" height="360"></canvas>
+    <div class="col-dir">
+      <h2>Resultado</h2>
+
+      <div id="placeholder">
+        <div class="ph-emoji">🤔</div>
+        <p>Ainda não analisaste nenhuma expressão.<br>Posiciona o rosto e clica em <b>Analisar</b>!</p>
+      </div>
+
+      <img id="animacao-curiosa" src="/homem_curioso.png" alt="Curioso">
+      <img id="animacao-amostradinho" src="/amostradinho.png" alt="Amostradinho">
+
+      <div id="resultado">
+        <div id="emoji"></div>
+        <div id="humor-texto"></div>
+        <div id="humor-desc"></div>
+        <div class="barras-titulo">distribuição de expressões</div>
+        <div id="barras"></div>
+      </div>
+    </div>
+
   </div>
-  <br>
-  <button onclick="tirarFoto()">📸 Tirar Foto</button>
-</div>
 
-<!-- PASSO 2 -->
-<div class="secao" id="sec2">
-  <img id="foto-preview" src="" alt="A tua foto">
-  <h3 style="margin:16px">Que expressão fizeste?</h3>
-  <div id="expressoes">
-    <div class="expr" onclick="escolherExpr(this,'surprised','😱')"><span>😱</span><p>Surpreso</p></div>
-    <div class="expr" onclick="escolherExpr(this,'angry','😤')"><span>😤</span><p>Com Raiva</p></div>
-    <div class="expr" onclick="escolherExpr(this,'happy','😄')"><span>😄</span><p>Muito Feliz</p></div>
-    <div class="expr" onclick="escolherExpr(this,'sad','😭')"><span>😭</span><p>Muito Triste</p></div>
-    <div class="expr" onclick="escolherExpr(this,'fearful','😨')"><span>😨</span><p>Bem Assustado</p></div>
-    <div class="expr" onclick="escolherExpr(this,'disgusted','🤢')"><span>🤢</span><p>Com Nojo</p></div>
-  </div>
-  <button id="btn-estilo" style="display:none" onclick="irPasso(3)">Próximo ➜</button>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
-<!-- PASSO 3 -->
-<div class="secao" id="sec3">
-  <h3 style="margin:16px">Escolhe o estilo da imagem</h3>
-  <div id="estilos">
-    <div class="estilo" onclick="escolherEstilo(this,'anime style, manga, vibrant')"><span>🎌</span><p>Anime</p></div>
-    <div class="estilo" onclick="escolherEstilo(this,'pixel art, 8-bit retro game style')"><span>👾</span><p>Pixel Art</p></div>
-    <div class="estilo" onclick="escolherEstilo(this,'classic internet meme, impact font, funny')"><span>📸</span><p>Meme Clássico</p></div>
-    <div class="estilo" onclick="escolherEstilo(this,'cartoon, colorful animation style')"><span>🖍️</span><p>Cartoon</p></div>
-    <div class="estilo" onclick="escolherEstilo(this,'oil painting, classical art museum style')"><span>🎨</span><p>Pintura</p></div>
-    <div class="estilo" onclick="escolherEstilo(this,'plastic action figure toy, studio lighting')"><span>🦸</span><p>Action Figure</p></div>
-  </div>
-  <button id="btn-gerar" style="display:none" onclick="gerarImagem()">✨ Gerar com IA</button>
-</div>
+  <script>
+    const humores = {
+      happy:     { emoji: '😄', texto: 'FELIZASSSOOO!',    desc: 'Caramba tu ta felizao mermo né rapa!',          cor: '#f1c40f' },
+      sad:       { emoji: '😢', texto: 'BADBOY...',         desc: 'Bora jogar um fut e se animar mermao',          cor: '#3498db' },
+      angry:     { emoji: '😤', texto: 'FURIOSO!',          desc: 'Nao vai quebrar nada nem ninguem nao em cara!', cor: '#e74c3c' },
+      surprised: { emoji: '😱', texto: 'SURPRESA!',         desc: 'ta assustado!',                                 cor: '#9b59b6' },
+      fearful:   { emoji: '😨', texto: 'NAO TENHAS MEDO!', desc: 'Nao tem medo naooooo!',                         cor: '#1abc9c' },
+      disgusted: { emoji: '🤢', texto: 'NOJIONHO!',         desc: 'NOJOOOOOO',                                     cor: '#27ae60' },
+      neutral:   { emoji: '😐', texto: 'AURA',              desc: 'neutro e farmando aura',                        cor: '#95a5a6' },
+      curious:   { emoji: '🧐', texto: 'CURIOSOOO!',        desc: 'Hmmm ta tentando ouvir algo né!',               cor: '#e67e22' }
+    };
 
-<!-- PASSO 4 -->
-<div class="secao" id="sec4">
-  <div id="resultado">
-    <p style="font-size:18px;margin:20px">A gerar a tua imagem... ⏳</p>
-  </div>
-  <button class="sec" onclick="irPasso(1)">🔄 Novo Meme</button>
-</div>
+    async function carregarModelos() {
+      document.getElementById('status').textContent = 'A carregar modelos...';
+      await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+      await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+      await faceapi.nets.faceExpressionNet.loadFromUri('/models');
+      document.getElementById('status').textContent = '✅ Pronto! Posiciona essa cara lindoma e clica em Analisar pa nois brincar.';
+      document.getElementById('btn-foto').disabled = false;
+      iniciarCamera();
+    }
 
-<script>
-  let exprSel = '';
-  let estiloSel = '';
-  let fotoBase64 = '';
+    let maoPertoOrelha = false;
+    let doisJoinhas = false;
 
-  // Iniciar câmera
-  async function iniciarCamera() {
-    const video = document.getElementById('video');
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
-  }
+    async function iniciarCamera() {
+      const video = document.getElementById('video');
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
 
-  function tirarFoto() {
-    const video = document.getElementById('video');
-    const canvas = document.createElement('canvas');
-    canvas.width = 480; canvas.height = 360;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    fotoBase64 = canvas.toDataURL('image/jpeg');
-    document.getElementById('foto-preview').src = fotoBase64;
-    irPasso(2);
-  }
+      const hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+      hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.7 });
 
-  function escolherExpr(el, nome) {
-    document.querySelectorAll('.expr').forEach(e => e.classList.remove('sel'));
-    el.classList.add('sel');
-    exprSel = nome;
-    document.getElementById('btn-estilo').style.display = 'inline-block';
-  }
+      hands.onResults((results) => {
+        if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
+          maoPertoOrelha = false;
+          doisJoinhas = false;
+          return;
+        }
 
-  function escolherEstilo(el, estilo) {
-    document.querySelectorAll('.estilo').forEach(e => e.classList.remove('sel'));
-    el.classList.add('sel');
-    estiloSel = estilo;
-    document.getElementById('btn-gerar').style.display = 'inline-block';
-  }
+        const landmarks = results.multiHandLandmarks[0];
+        const pulso = landmarks[0];
+        const dedoMedio = landmarks[12];
+        const maoAlta = dedoMedio.y < 0.55;
+        const distancia = Math.sqrt(Math.pow(dedoMedio.x - pulso.x, 2) + Math.pow(dedoMedio.y - pulso.y, 2));
+        const maoAberta = distancia > 0.15;
+        maoPertoOrelha = maoAlta && maoAberta;
 
-  async function gerarImagem() {
-    irPasso(4);
-    const prompt = `A person with a ${exprSel} expression, ${estiloSel}, high quality, detailed`;
-    document.getElementById('status').textContent = 'A enviar para a IA...';
-
-    try {
-      const res = await fetch('/gerar-imagem', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
+        if (results.multiHandLandmarks.length >= 2) {
+          let joinhas = 0;
+          results.multiHandLandmarks.forEach((hand) => {
+            if (hand[4].y < hand[8].y && hand[4].y < hand[12].y) joinhas++;
+          });
+          doisJoinhas = joinhas >= 2;
+        } else {
+          doisJoinhas = false;
+        }
       });
-      const data = await res.json();
 
-      if (data.imagem) {
-        document.getElementById('resultado').innerHTML = `
-          <p style="margin:16px;font-size:18px">✅ Imagem gerada!</p>
-          <img src="${data.imagem}" alt="Meme gerado">
-          <br>
-          <a href="${data.imagem}" download="memeframe.png">
-            <button>⬇️ Guardar</button>
-          </a>
-        `;
-      } else {
-        document.getElementById('resultado').innerHTML = '<p>❌ Erro ao gerar imagem.</p>';
+      const camera = new Camera(video, {
+        onFrame: async () => { await hands.send({ image: video }); },
+        width: 420, height: 315
+      });
+      camera.start();
+    }
+
+    async function tirarFoto() {
+      document.getElementById('status').textContent = 'A analisar...';
+      document.getElementById('btn-foto').disabled = true;
+
+      const video = document.getElementById('video');
+      const detecoes = await faceapi
+        .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceExpressions();
+
+      if (!detecoes) {
+        document.getElementById('status').textContent = '❌ Nenhum rosto detetado. FAZ de novo!';
+        document.getElementById('btn-foto').disabled = false;
+        return;
       }
-    } catch(e) {
-      document.getElementById('resultado').innerHTML = '<p>❌ Erro: ' + e.message + '</p>';
-    }
-  }
 
-  function irPasso(n) {
-    for (let i = 1; i <= 4; i++) {
-      document.getElementById('sec' + i).classList.remove('visivel');
-      document.getElementById('p' + i).classList.remove('ativo');
-    }
-    document.getElementById('sec' + n).classList.add('visivel');
-    document.getElementById('p' + n).classList.add('ativo');
-  }
+      const expressoes = detecoes.expressions;
+      const curioso = maoPertoOrelha;
+      const dominanteExpr = Object.entries(expressoes).reduce((a, b) => a[1] > b[1] ? a : b);
+      const dominante = curioso ? 'curious' : dominanteExpr[0];
+      const humor = humores[dominante] || humores.neutral;
 
-  iniciarCamera();
-</script>
+      document.getElementById('emoji').textContent = humor.emoji;
+      document.getElementById('humor-texto').textContent = humor.texto;
+      document.getElementById('humor-desc').textContent = humor.desc;
+
+      const valCurioso = curioso ? 3 : 0;
+      const todasExpressoes = [['curious', valCurioso], ...Object.entries(expressoes)];
+      const totalGeral = todasExpressoes.reduce((sum, [, val]) => sum + val, 0);
+      todasExpressoes.sort((a, b) => b[1] - a[1]);
+
+      const barrasDiv = document.getElementById('barras');
+      barrasDiv.innerHTML = '';
+      todasExpressoes.forEach(([expr, val]) => {
+        const h = humores[expr];
+        if (!h) return;
+        const pct = Math.round((val / totalGeral) * 100);
+        if (pct === 0) return;
+        barrasDiv.innerHTML += `
+          <div class="label-barra"><span>${h.emoji} ${h.texto}</span><span>${pct}%</span></div>
+          <div class="barra-container"><div class="barra" style="width:${pct}%;background:${h.cor}"></div></div>
+        `;
+      });
+
+      document.getElementById('animacao-curiosa').classList.toggle('ativo', dominante === 'curious');
+      document.getElementById('animacao-amostradinho').style.display = doisJoinhas ? 'block' : 'none';
+
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('resultado').style.display = 'block';
+      document.getElementById('btn-novo').style.display = 'inline-block';
+      document.getElementById('status').textContent = '';
+    }
+
+    function novaFoto() {
+      document.getElementById('resultado').style.display = 'none';
+      document.getElementById('placeholder').style.display = 'block';
+      document.getElementById('btn-novo').style.display = 'none';
+      document.getElementById('btn-foto').disabled = false;
+      document.getElementById('animacao-curiosa').classList.remove('ativo');
+      document.getElementById('animacao-amostradinho').style.display = 'none';
+      document.getElementById('status').textContent = '✅ Pronto! Posiciona ESSA CARINHA LINDAAA e clica em Analisar pa começar a brincadeira.';
+    }
+
+    carregarModelos();
+  </script>
 </body>
+
 </html>
