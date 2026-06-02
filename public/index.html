@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HUMORDETECTOR</title>
+  <!-- fontes do Google -->
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:wght@400;700&display=swap"
     rel="stylesheet">
   <style>
@@ -35,6 +36,7 @@
       font-size: 4rem;
       letter-spacing: 8px;
       line-height: 1;
+      /* degrade */
       background: linear-gradient(135deg, #e74c3c, #ff8c42);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -42,6 +44,7 @@
     }
 
     h1 span {
+      /* degrade 2  "detector" */
       background: linear-gradient(135deg, #fff, #aaa);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -62,6 +65,7 @@
       margin-top: 8px;
     }
 
+    /* duas colunas lado a lado */
     .main {
       display: flex;
       flex: 1;
@@ -74,6 +78,7 @@
       justify-content: center;
     }
 
+    /* Coluna esquerda metade */
     .col-esq {
       flex: 1;
       display: flex;
@@ -92,6 +97,7 @@
       text-transform: uppercase;
     }
 
+    /* caixa da câmera */
     #camara-box {
       position: relative;
       display: inline-block;
@@ -102,14 +108,6 @@
       display: block;
       width: 100%;
       max-width: 420px;
-    }
-
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
     }
 
     .botoes {
@@ -185,6 +183,7 @@
       font-size: 20px;
     }
 
+    /* Coluna direita ocupa a outra metade */
     .col-dir {
       flex: 1;
       display: flex;
@@ -250,6 +249,7 @@
       overflow: hidden;
     }
 
+    /* A barra tem transição */
     .barra {
       height: 100%;
       border-radius: 8px;
@@ -264,6 +264,7 @@
       margin-bottom: 2px;
     }
 
+    /* caixa esperando a foto */
     #placeholder {
       width: 100%;
       max-width: 420px;
@@ -285,17 +286,22 @@
       line-height: 1.6;
     }
 
+    /* Imagem do curioso */
     #animacao-curiosa {
       display: none;
       width: 180px;
       border-radius: 16px;
       margin: 0 auto;
+      /* animações aparece a cresvendo e depois balança */
       animation: curiosoPop 0.4s ease forwards, balancar 1s ease infinite alternate 0.4s;
       box-shadow: 0 0 30px rgba(230, 126, 34, 0.4);
     }
 
-    #animacao-curiosa.ativo { display: block; }
+    #animacao-curiosa.ativo {
+      display: block;
+    }
 
+    /* Imagem do amostradinho */
     #animacao-amostradinho {
       display: none;
       width: 280px;
@@ -305,17 +311,29 @@
       box-shadow: 0 0 40px rgba(241, 196, 15, 0.5);
     }
 
+    /* Animação de aparecer */
     @keyframes curiosoPop {
-      from { transform: scale(0); opacity: 0; }
-      to   { transform: scale(1); opacity: 1; }
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
+    /* balançar —  */
     @keyframes balancar {
-      from { transform: scale(1) rotate(-3deg); }
-      to   { transform: scale(1) rotate(3deg); }
-    }
+      from {
+        transform: scale(1) rotate(-3deg);
+      }
 
-    #animacao-curiosa.ativo { display: block; }
+      to {
+        transform: scale(1) rotate(3deg);
+      }
+    }
   </style>
 </head>
 
@@ -323,19 +341,21 @@
 
   <header>
     <h1>humor<span>DETECTOR</span></h1>
-    <div class="subtitulo">reconhecimento facial de expressões</div>
-    <div id="status">A carregar OS modelos...</div>
+    <div class="subtitulo">reconhecimento facial das suas expressões</div>
+    <div id="status">Carregando os modelo...</div>
   </header>
 
   <div class="main">
 
     <div class="col-esq">
       <h2>Câmera</h2>
+      <!-- caixa com vídeo -->
       <div id="camara-box">
+        <!-- Vídeo da webcam:  -->
         <video id="video" width="420" height="315" autoplay muted playsinline></video>
-        <canvas id="overlay" width="420" height="315"></canvas>
       </div>
       <div class="botoes">
+        <!-- Botão desativado até  carregar -->
         <button id="btn-foto" onclick="tirarFoto()" disabled>📸 Analisar Expressão</button>
         <button id="btn-novo" class="sec" onclick="novaFoto()" style="display:none">🔄 Nova</button>
       </div>
@@ -346,18 +366,21 @@
         <div class="dica-item"><span>😱</span><span>Abre bem a boca e os olhos</span></div>
         <div class="dica-item"><span>🧐</span><span>Põe a mão aberta ao lado da orelha</span></div>
         <div class="dica-item"><span>😐</span><span>Fica completamente neutro e farma aura</span></div>
-        <div className="dica-item"><span>⭐</span><span>Extra: tenta ser amostradinho e terás uma surpresa (faz dois joinhas)</span></div>
+        <div className="dica-item"><span>⭐</span><span>Extra: tenta ser amostradinho e terás uma surpresa (faz dois
+            joinhas)</span></div>
       </div>
     </div>
 
     <div class="col-dir">
       <h2>Resultado</h2>
 
+      <!-- Mostrado antes de qualquer análise -->
       <div id="placeholder">
         <div class="ph-emoji">🤔</div>
         <p>Ainda não analisaste nenhuma expressão.<br>Posiciona o rosto e clica em <b>Analisar</b>!</p>
       </div>
 
+      <!-- Imagens de animação só quando o humoré detectado -->
       <img id="animacao-curiosa" src="/homem_curioso.png" alt="Curioso">
       <img id="animacao-amostradinho" src="/amostradinho.png" alt="Amostradinho">
 
@@ -372,69 +395,99 @@
 
   </div>
 
+  <!-- Bibliotecas por CDN (sem instalar) -->
   <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
   <script>
+    // coiso com todas as expressões emoji, texto e descrição
     const humores = {
-      happy:     { emoji: '😄', texto: 'FELIZASSSOOO!',    desc: 'Caramba tu ta felizao mermo né rapa!',          cor: '#f1c40f' },
-      sad:       { emoji: '😢', texto: 'BADBOY...',         desc: 'Bora jogar um fut e se animar mermao',          cor: '#3498db' },
-      angry:     { emoji: '😤', texto: 'FURIOSO!',          desc: 'Nao vai quebrar nada nem ninguem nao em cara!', cor: '#e74c3c' },
-      surprised: { emoji: '😱', texto: 'SURPRESA!',         desc: 'ta assustado!',                                 cor: '#9b59b6' },
-      fearful:   { emoji: '😨', texto: 'NAO TENHAS MEDO!', desc: 'Nao tem medo naooooo!',                         cor: '#1abc9c' },
-      disgusted: { emoji: '🤢', texto: 'NOJIONHO!',         desc: 'NOJOOOOOO',                                     cor: '#27ae60' },
-      neutral:   { emoji: '😐', texto: 'AURA',              desc: 'neutro e farmando aura',                        cor: '#95a5a6' },
-      curious:   { emoji: '🧐', texto: 'CURIOSOOO!',        desc: 'Hmmm ta tentando ouvir algo né!',               cor: '#e67e22' }
+      happy: { emoji: '😄', texto: 'FELIZASSSOOO!', desc: 'Caramba tu ta felizao mermo né rapa!', cor: '#f1c40f' },
+      sad: { emoji: '😢', texto: 'BADBOY...', desc: 'Bora jogar um fut e se animar mermao', cor: '#3498db' },
+      angry: { emoji: '😤', texto: 'FURIOSO!', desc: 'Nao vai quebrar nada nem ninguem nao em cara!', cor: '#e74c3c' },
+      surprised: { emoji: '😱', texto: 'SURPRESA!', desc: 'ta assustado!', cor: '#9b59b6' },
+      fearful: { emoji: '😨', texto: 'NAO TENHAS MEDO!', desc: 'Nao tem medo naooooo!', cor: '#1abc9c' },
+      disgusted: { emoji: '🤢', texto: 'NOJIONHO!', desc: 'NOJOOOOOO', cor: '#27ae60' },
+      neutral: { emoji: '😐', texto: 'AURA', desc: 'neutro e farmando aura', cor: '#95a5a6' },
+      curious: { emoji: '🧐', texto: 'CURIOSOOO!', desc: 'Hmmm ta tentando ouvir algo né!', cor: '#e67e22' }
     };
 
+    // Carrega os modelos de IA necessários pro reconhecimento facial
     async function carregarModelos() {
       document.getElementById('status').textContent = 'A carregar modelos...';
+
+      // Modelo 1: ve se tem rosto
       await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+      // Modelo 2: ve os ponto do rosto (olhos, nariz, boca, etc)
       await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+      // Modelo 3: ve a expressao
       await faceapi.nets.faceExpressionNet.loadFromUri('/models');
+
       document.getElementById('status').textContent = '✅ Pronto! Posiciona essa cara lindoma e clica em Analisar pa nois brincar.';
       document.getElementById('btn-foto').disabled = false;
       iniciarCamera();
     }
 
+    // Variáveis que guardam as mão
     let maoPertoOrelha = false;
     let doisJoinhas = false;
 
     async function iniciarCamera() {
       const video = document.getElementById('video');
+
+      // permissão
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       video.srcObject = stream;
 
+      // locateFile diz ao MediaPipe onde buscar os seus ficheiros internos
       const hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+
+      // maxNumHands: 2 para detetar as duas mãos ao mesmo tempo
+      // modelComplexity: 0 é o modelo mais rápido
+      // minDetectionConfidence: 0.7 — só considera mão detetada se tiver 70%
       hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.7 });
 
+      // chama automatico sempre que o MediaPipe analisa
       hands.onResults((results) => {
+        // Se não há nenhuma mão visível xau
         if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
           maoPertoOrelha = false;
           doisJoinhas = false;
           return;
         }
 
+        // Analisa a primeira mão detetada pro curioso
         const landmarks = results.multiHandLandmarks[0];
-        const pulso = landmarks[0];
-        const dedoMedio = landmarks[12];
+        const pulso = landmarks[0];      // ponto 0 = pulso
+        const dedoMedio = landmarks[12]; // ponto 12 = ponta do dedo médio
+
         const maoAlta = dedoMedio.y < 0.55;
-        const distancia = Math.sqrt(Math.pow(dedoMedio.x - pulso.x, 2) + Math.pow(dedoMedio.y - pulso.y, 2));
+
+        // Teorema de Pitágoras ....?
+        const distancia = Math.sqrt(
+          Math.pow(dedoMedio.x - pulso.x, 2) +
+          Math.pow(dedoMedio.y - pulso.y, 2)
+        );
         const maoAberta = distancia > 0.15;
+
+        // Curioso
         maoPertoOrelha = maoAlta && maoAberta;
 
+        // Verifica os joinhas se houver 2 mãos
         if (results.multiHandLandmarks.length >= 2) {
           let joinhas = 0;
           results.multiHandLandmarks.forEach((hand) => {
+            // Se o polegar acima do indicador e médio = joinha
             if (hand[4].y < hand[8].y && hand[4].y < hand[12].y) joinhas++;
           });
-          doisJoinhas = joinhas >= 2;
+          doisJoinhas = joinhas >= 2; // só se as duas mao tiver
         } else {
           doisJoinhas = false;
         }
       });
 
+      // Liga o MediaPipe - coiso do google q ta vendo a mao pro curioso e pro amostradinho
       const camera = new Camera(video, {
         onFrame: async () => { await hands.send({ image: video }); },
         width: 420, height: 315
@@ -447,6 +500,8 @@
       document.getElementById('btn-foto').disabled = true;
 
       const video = document.getElementById('video');
+
+      // 1. deteta o rosto e ver oq é
       const detecoes = await faceapi
         .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
@@ -459,34 +514,47 @@
       }
 
       const expressoes = detecoes.expressions;
+
+      // dominan
       const curioso = maoPertoOrelha;
+
+      // reduce percorre todas as expressões e guarda sempre a de maior valor
       const dominanteExpr = Object.entries(expressoes).reduce((a, b) => a[1] > b[1] ? a : b);
+
       const dominante = curioso ? 'curious' : dominanteExpr[0];
       const humor = humores[dominante] || humores.neutral;
 
+      // Atualiza
       document.getElementById('emoji').textContent = humor.emoji;
       document.getElementById('humor-texto').textContent = humor.texto;
       document.getElementById('humor-desc').textContent = humor.desc;
 
+      // td tem que dar 100
+      // diferença do curioso pros outros
       const valCurioso = curioso ? 3 : 0;
       const todasExpressoes = [['curious', valCurioso], ...Object.entries(expressoes)];
+
       const totalGeral = todasExpressoes.reduce((sum, [, val]) => sum + val, 0);
-      todasExpressoes.sort((a, b) => b[1] - a[1]);
+      todasExpressoes.sort((a, b) => b[1] - a[1]); // ordena do maior para o menor
 
       const barrasDiv = document.getElementById('barras');
       barrasDiv.innerHTML = '';
       todasExpressoes.forEach(([expr, val]) => {
         const h = humores[expr];
         if (!h) return;
+
+        // calc porcentagem
         const pct = Math.round((val / totalGeral) * 100);
-        if (pct === 0) return;
+
         barrasDiv.innerHTML += `
           <div class="label-barra"><span>${h.emoji} ${h.texto}</span><span>${pct}%</span></div>
           <div class="barra-container"><div class="barra" style="width:${pct}%;background:${h.cor}"></div></div>
         `;
       });
 
+      //imagem do curioso
       document.getElementById('animacao-curiosa').classList.toggle('ativo', dominante === 'curious');
+      //imagem do amostradinho
       document.getElementById('animacao-amostradinho').style.display = doisJoinhas ? 'block' : 'none';
 
       document.getElementById('placeholder').style.display = 'none';
