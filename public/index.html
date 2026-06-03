@@ -334,6 +334,53 @@
         transform: scale(1) rotate(3deg);
       }
     }
+
+    /* ── RESPONSIVO pro celular ── */
+@media (max-width: 768px) {
+
+  h1 {
+    font-size: 2.8rem;
+    letter-spacing: 4px;
+  }
+
+  /* empilhar em vez de por de lado */
+  .main {
+    flex-direction: column;
+    padding: 16px;
+    align-items: center;
+  }
+
+  /* remove as bordas e o padding */
+  .col-esq {
+    border-right: none;
+    border-bottom: 1px solid #222;
+    padding-right: 0;
+    padding-bottom: 24px;
+    width: 100%;
+  }
+
+  .col-dir {
+    padding-left: 0;
+    padding-top: 24px;
+    width: 100%;
+  }
+
+  /* vídeo ocupa a largura toda */
+  video {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* resultado e caixa do resultado também */
+  #resultado,
+  #placeholder {
+    max-width: 100%;
+  }
+
+  .dicas {
+    max-width: 100%;
+  }
+}
   </style>
 </head>
 
