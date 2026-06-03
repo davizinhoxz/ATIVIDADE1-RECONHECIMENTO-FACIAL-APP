@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HUMORDETECTOR</title>
+  <title>MEMEFRAME</title>
   <!-- fontes do Google -->
   <link href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:wght@400;700&display=swap"
     rel="stylesheet">
@@ -336,50 +336,62 @@
     }
 
     /* ── RESPONSIVO pro celular ── */
-@media (max-width: 768px) {
+    @media (max-width: 768px) {
 
-  h1 {
-    font-size: 2.8rem;
-    letter-spacing: 4px;
-  }
+      h1 {
+        font-size: 2.8rem;
+        letter-spacing: 4px;
+      }
 
-  /* empilhar em vez de por de lado */
-  .main {
-    flex-direction: column;
-    padding: 16px;
-    align-items: center;
-  }
+      /* empilhar em vez de por de lado */
+      .main {
+        flex-direction: column;
+        padding: 16px;
+        align-items: center;
+      }
 
-  /* remove as bordas e o padding */
-  .col-esq {
-    border-right: none;
-    border-bottom: 1px solid #222;
-    padding-right: 0;
-    padding-bottom: 24px;
-    width: 100%;
-  }
+      /* remove as bordas e o padding */
+      .col-esq {
+        border-right: none;
+        border-bottom: 1px solid #222;
+        padding-right: 0;
+        padding-bottom: 24px;
+        width: 100%;
+      }
 
-  .col-dir {
-    padding-left: 0;
-    padding-top: 24px;
-    width: 100%;
-  }
+      .col-dir {
+        padding-left: 0;
+        padding-top: 24px;
+        width: 100%;
+      }
 
-  /* vídeo ocupa a largura toda */
-  video {
-    max-width: 100%;
-    width: 100%;
-  }
+      /* vídeo ocupa a largura toda */
+      video {
+        max-width: 100%;
+        width: 100%;
+      }
 
-  /* resultado e caixa do resultado também */
-  #resultado,
-  #placeholder {
-    max-width: 100%;
-  }
+      /* resultado e caixa do resultado também */
+      #resultado,
+      #placeholder {
+        max-width: 100%;
+      }
 
-  .dicas {
-    max-width: 100%;
-  }
+      .dicas {
+        max-width: 100%;
+      }
+    }
+
+    #recomendacao {
+  margin-top: 16px;
+  background: #222;
+  border-left: 3px solid #e74c3c;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #aaa;
+  text-align: left;
+  display: none;
 }
   </style>
 </head>
@@ -387,7 +399,7 @@
 <body>
 
   <header>
-    <h1>humor<span>DETECTOR</span></h1>
+    <h1>meme<span>FRAME</span></h1>
     <div class="subtitulo">reconhecimento facial das suas expressões</div>
     <div id="status">Carregando os modelo...</div>
   </header>
@@ -437,6 +449,7 @@
         <div id="humor-desc"></div>
         <div class="barras-titulo">distribuição de expressões</div>
         <div id="barras"></div>
+        <div id="recomendacao"></div>
       </div>
     </div>
 
@@ -451,12 +464,12 @@
     // coiso com todas as expressões emoji, texto e descrição
     const humores = {
       happy: { emoji: '😄', texto: 'FELIZASSSOOO!', desc: 'Caramba tu ta felizao mermo né rapa!', cor: '#f1c40f' },
-      sad: { emoji: '😢', texto: 'BADBOY...', desc: 'Bora jogar um fut e se animar mermao', cor: '#3498db' },
+      sad: { emoji: '😢', texto: 'BADBOY...', desc: 'Bora jogar um fut e se animar mermao', cor: '#3498db', rec: 'Liga ao teu melhor amigo, come qualquer coisa boa e coloca um beat 🎵' },
       angry: { emoji: '😤', texto: 'FURIOSO!', desc: 'Nao vai quebrar nada nem ninguem nao em cara!', cor: '#e74c3c' },
       surprised: { emoji: '😱', texto: 'SURPRESA!', desc: 'ta assustado!', cor: '#9b59b6' },
-      fearful: { emoji: '😨', texto: 'NAO TENHAS MEDO!', desc: 'Nao tem medo naooooo!', cor: '#1abc9c' },
-      disgusted: { emoji: '🤢', texto: 'NOJIONHO!', desc: 'NOJOOOOOO', cor: '#27ae60' },
-      neutral: { emoji: '😐', texto: 'AURA', desc: 'neutro e farmando aura', cor: '#95a5a6' },
+      fearful: { emoji: '😨', texto: 'NAO TENHAS MEDO!', desc: 'Nao tem medo naooooo!', cor: '#1abc9c', rec: 'O medo é só na cabeça! Liga a luz, chama alguem e respira 💪' },
+      disgusted: { emoji: '🤢', texto: 'NOJIONHO!', desc: 'NOJOOOOOO', cor: '#27ae60', rec: 'Afasta-te do que te deu nojo imediatamente 😂 vai buscar agua!' },
+      neutral: { emoji: '😐', texto: 'AURA', desc: 'neutro e farmando aura', cor: '#95a5a6', rec: 'Aura no máximo mas tenta sorrir um bocado, faz bem! 😄' },
       curious: { emoji: '🧐', texto: 'CURIOSOOO!', desc: 'Hmmm ta tentando ouvir algo né!', cor: '#e67e22' }
     };
 
@@ -487,7 +500,7 @@
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       video.srcObject = stream;
 
-      // locateFile diz ao MediaPipe onde buscar os seus ficheiros internos
+      // locateFile diz ao MediaPipe (detctar as mao) onde buscar os seus ficheiros internos
       const hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
 
       // maxNumHands: 2 para detetar as duas mãos ao mesmo tempo
@@ -575,6 +588,14 @@
       document.getElementById('emoji').textContent = humor.emoji;
       document.getElementById('humor-texto').textContent = humor.texto;
       document.getElementById('humor-desc').textContent = humor.desc;
+      const negativos = ['neutral', 'sad', 'fearful', 'disgusted'];
+      const recDiv = document.getElementById('recomendacao');
+      if (negativos.includes(dominante)) {
+        recDiv.textContent = '💡 ' + humor.rec;
+        recDiv.style.display = 'block';
+      } else {
+        recDiv.style.display = 'none';
+      }
 
       // td tem que dar 100
       // diferença do curioso pros outros
@@ -618,6 +639,7 @@
       document.getElementById('animacao-curiosa').classList.remove('ativo');
       document.getElementById('animacao-amostradinho').style.display = 'none';
       document.getElementById('status').textContent = '✅ Pronto! Posiciona ESSA CARINHA LINDAAA e clica em Analisar pa começar a brincadeira.';
+      document.getElementById('recomendacao').style.display = 'none';
     }
 
     carregarModelos();
